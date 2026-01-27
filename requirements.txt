@@ -5,6 +5,5 @@ matplotlib
 numpy
 scipy
 requests
-pyttsx3
 SpeechRecognition
 soundfile

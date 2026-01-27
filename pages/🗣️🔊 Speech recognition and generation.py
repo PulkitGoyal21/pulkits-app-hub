@@ -1,5 +1,5 @@
 import streamlit as st
-import pyttsx3 as tt
+#import pyttsx3 as tt
 import speech_recognition as sr
 import soundfile as sf
 import time
@@ -62,13 +62,19 @@ else:
     with st.container(border=True):
         st.markdown("### 🔊 Speech generation")
 
-        engine = tt.init()
+        #engine = tt.init()
 
         input_text = st.text_input("Enter text")
 
         if st.button("Speak 🔊"):
-            engine.say(input_text)
+            #engine.say(input_text)
             with st.spinner("Preparing to speak..."):
                 time.sleep(2.5)
-            engine.runAndWait()
+            st.components.v1.html(f"""
+            <script>
+            const msg = new SpeechSynthesisUtterance("{input_text}");
+            speechSynthesis.speak(msg);
+            </script>
+            """)                  
+            #engine.runAndWait()
             st.toast("Speech generated 🎧")
