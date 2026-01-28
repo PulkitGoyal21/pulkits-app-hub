@@ -7,3 +7,5 @@ scipy
 requests
 SpeechRecognition
 soundfile
+streamlit-autorefresh
+plotly
