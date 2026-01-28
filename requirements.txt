@@ -9,4 +9,4 @@ SpeechRecognition
 soundfile
 streamlit-autorefresh
 plotly
-opencv-python
+opencv-python>=4.8
