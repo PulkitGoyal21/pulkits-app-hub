@@ -9,7 +9,12 @@ with open("engine_idle_loop.wav", "rb") as f:
 with open("gear_shift.wav", "rb") as f:
     gear_b64 = base64.b64encode(f.read()).decode()
 
-st_autorefresh(interval=600, key='tick')
+mode = 'Normal'
+
+factor = 1
+if mode != 'Normal':
+    factor = 1/5
+st_autorefresh(interval=600*factor, key='tick')
 
 
 st.title('🏎️ Car Simulator')
@@ -54,16 +59,16 @@ mode = st.radio("Performance mode", ['Normal', 'High (removes graphs)', 'Ultra (
 ratio = gear_ratios[gear - 1]
 
 if intent == "Accelerate":
-    rpm += 270*ratio
-    speed += 3.2 * ratio
+    rpm += 270*ratio*factor
+    speed += 3.2 * ratio*factor
 
 elif intent == "Brake":
-    rpm -= 720/ratio
-    speed -= 9.2
+    rpm -= 720*factor/ratio
+    speed -= 9.2*factor
 
 else:
-    rpm -= 240/ratio
-    speed -= 0.26
+    rpm -= 240*factor/ratio
+    speed -= 0.26*factor
 
 rpm = max(idle_rpm, min(rpm, redline))
 speed = max(0, min(speed, max_speed))
@@ -72,7 +77,7 @@ if rpm >= 8200 and  gear < len(gear_ratios) and speed>max_speed_gear[gear-1]:
     rpm *= 0.5
     gear += 1
 elif rpm <= 1800 and gear > 1 and speed<min_speed[gear-1]:
-    rpm *= 1.7
+    rpm *= 2.3
     gear -= 1
 
 st.session_state.rpm = rpm
