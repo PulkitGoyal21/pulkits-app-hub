@@ -50,7 +50,7 @@ mode = st.radio("Performance mode", ['Normal', 'High (removes graphs)', 'Ultra (
 
 factor = 1
 if mode != 'Normal':
-    factor = 1/5
+    factor = 1/2
 else:
     factor = 1
 st_autorefresh(interval=600*factor, key='tick')
