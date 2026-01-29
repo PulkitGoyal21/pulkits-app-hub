@@ -1,8 +1,15 @@
 import streamlit as st
 import plotly.graph_objects as go
 from streamlit_autorefresh import st_autorefresh
+import base64
 
-st_autorefresh(interval=300, key='tick')
+with open("engine_idle_loop.wav", "rb") as f:
+    audio_b64 = base64.b64encode(f.read()).decode()
+
+with open("gear_shift.wav", "rb") as f:
+    gear_b64 = base64.b64encode(f.read()).decode()
+
+st_autorefresh(interval=600, key='tick')
 
 
 st.title('🏎️ Car Simulator')
@@ -43,16 +50,16 @@ intent = st.radio(
 ratio = gear_ratios[gear - 1]
 
 if intent == "Accelerate":
-    rpm += 135*ratio
-    speed += 1.6 * ratio
+    rpm += 270*ratio
+    speed += 3.2 * ratio
 
 elif intent == "Brake":
-    rpm -= 360/ratio
-    speed -= 4.6
+    rpm -= 720/ratio
+    speed -= 9.2
 
 else:
-    rpm -= 120/ratio
-    speed -= 0.13
+    rpm -= 240/ratio
+    speed -= 0.26
 
 rpm = max(idle_rpm, min(rpm, redline))
 speed = max(0, min(speed, max_speed))
@@ -97,8 +104,8 @@ speedometer.update_layout(
     font={'color': "white"}
 )
 
-st.plotly_chart(speedometer, use_container_width=True)
-
+with st.container():
+    st.plotly_chart(speedometer, use_container_width=True)
 
 rpm_ratio = rpm / redline
 st.progress(min(1.0, rpm_ratio))
@@ -187,7 +194,7 @@ st.session_state.t.append(st.session_state.ticky)
 st.session_state.rpm_hist.append(rpm)
 st.session_state.speed_hist.append(speed)
 
-MAX_POINTS = 100
+MAX_POINTS = 50
 
 if len(st.session_state.t) > MAX_POINTS:
     st.session_state.t.pop(0)
@@ -208,4 +215,58 @@ c2.line_chart(
     {"Speed": st.session_state.speed_hist},
     height=250
 )
+
+st.components.v1.html(f"""
+<div style="display:none">
+  <audio id="engine" loop>
+    <source src="data:audio/wav;base64,{audio_b64}" type="audio/wav">
+  </audio>
+</div>
+
+<script>
+if (!window.engineAudio) {{
+    window.engineAudio = document.getElementById("engine");
+    window.engineAudio.preservesPitch = false;
+    window.engineAudio.play();
+    window.engineAudio.smoothRate = 1.0;
+}}
+
+let rpm = {rpm};
+let idle = {idle_rpm};
+let redline = {redline};
+
+// map rpm → playbackRate (SAME LOGIC AS YOUR WORKING DEMO)
+let target = 0.8 + (rpm - idle) / (redline - idle) * 2.7;
+target = Math.min(3.2, Math.max(0.7, target));
+
+// smooth it
+window.engineAudio.smoothRate +=
+    (target - window.engineAudio.smoothRate) * 0.06;
+
+window.engineAudio.playbackRate = window.engineAudio.smoothRate;
+</script>
+""", height=0)
+
+st.components.v1.html(f"""
+<div style="display:none">
+  <audio id="gear-sound">
+    <source src="data:audio/wav;base64,{gear_b64}" type="audio/wav">
+  </audio>
+</div>
+
+<script>
+if (!window.gearAudio) {{
+    window.gearAudio = document.getElementById("gear-sound");
+    window.gearAudio.volume = 1.0;
+}}
+
+// Python tells us if gear changed
+let gearChanged = {str(gear_changed).lower()};
+
+if (gearChanged) {{
+    window.gearAudio.currentTime = 0;
+    window.gearAudio.play();
+}}
+</script>
+""", height=0)
 
