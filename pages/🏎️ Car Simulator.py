@@ -50,7 +50,7 @@ mode = st.radio("Performance mode", ['Normal', 'High (removes graphs)', 'Ultra (
 
 factor = 1
 if mode != 'Normal':
-    factor = 1/2
+    factor = 1
 else:
     factor = 1
 st_autorefresh(interval=600*factor, key='tick')
@@ -77,7 +77,7 @@ if rpm >= 8200 and  gear < len(gear_ratios) and speed>max_speed_gear[gear-1]:
     rpm *= 0.5
     gear += 1
 elif rpm <= 1800 and gear > 1 and speed<min_speed[gear-1]:
-    rpm *= 2.3
+    rpm *= 1.9
     gear -= 1
 
 st.session_state.rpm = rpm
