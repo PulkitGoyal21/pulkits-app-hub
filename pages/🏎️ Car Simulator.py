@@ -15,6 +15,8 @@ st_autorefresh(interval=600, key='tick')
 st.title('🏎️ Car Simulator')
 st.markdown('Simulation of a real car based on speed, braking, gears and rpm.')
 
+st.warning("⚠️ This is a demanding app and may not run smoothly on some devices.")
+
 idle_rpm = 900
 redline = 8500
 max_speed = 420
