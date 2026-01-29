@@ -9,14 +9,6 @@ with open("engine_idle_loop.wav", "rb") as f:
 with open("gear_shift.wav", "rb") as f:
     gear_b64 = base64.b64encode(f.read()).decode()
 
-mode = 'Normal'
-
-factor = 1
-if mode != 'Normal':
-    factor = 1/5
-st_autorefresh(interval=600*factor, key='tick')
-
-
 st.title('🏎️ Car Simulator')
 st.markdown('Simulation of a real car based on speed, braking, gears and rpm.')
 
@@ -55,6 +47,14 @@ intent = st.radio(
 )
 
 mode = st.radio("Performance mode", ['Normal', 'High (removes graphs)', 'Ultra (removes sound)'])
+
+factor = 1
+if mode != 'Normal':
+    factor = 1/5
+else:
+    factor = 1
+st_autorefresh(interval=600*factor, key='tick')
+
 
 ratio = gear_ratios[gear - 1]
 
